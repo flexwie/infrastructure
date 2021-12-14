@@ -4,7 +4,11 @@ on:
   push:
     branches:
     - main
+    paths:
+      - "terraform/**"
   pull_request:
+    paths:
+      - "terraform/**"
   workflow_dispatch:
 
 jobs:
@@ -29,6 +33,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: ./terraform
 
     steps:
     # Checkout the repository to the GitHub Actions runner
