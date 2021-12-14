@@ -43,6 +43,13 @@ resource "oci_core_default_security_list" "public_subnet_security_list" {
     destination = "0.0.0.0/0"
   }
 
+  ingress_security_rules {
+    protocol    = "all"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+  }
+
   dynamic "egress_security_rules" {
     for_each = var.default_security_list_rules.public_subnets.enable_icpm_to_all ? local.icmp_types : []
     content {
