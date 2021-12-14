@@ -78,7 +78,8 @@ resource "oci_core_instance" "node" {
   }
 
   source_details {
-    source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaalzjgyygxfxhbwfrzke2smgyaokx6lzingsnksvk73hndq6pxkyba"
+    #source_id   = jsondecode(file(var.manifest)).builds[0].artifact_id
+    source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaln55u5yyl776hpydrry6gxg6hwlagutrbhdaohemlw5sz4sdf4cq"
     source_type = "image"
   }
 
@@ -90,51 +91,6 @@ resource "oci_core_instance" "node" {
 
   metadata = {
     "ssh_authorized_keys" = file("~/.ssh/id_rsa.pub")
-    #"user_data"           = data.template_cloudinit_config.init.rendered
   }
   preserve_boot_volume = false
-
-  # connection {
-  #   type        = "ssh"
-  #   user        = "ubuntu"
-  #   host        = self.public_ip
-  #   private_key = file("~/.ssh/id_rsa")
-  # }
-
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "cloud-init status --wait"
-  #   ]
-  # }
 }
-
-# resource "null_resource" "certs" {
-#   connection {
-#     type        = "ssh"
-#     user        = "ubuntu"
-#     host        = oci_core_instance.node.public_ip
-#     private_key = file("~/.ssh/id_rsa")
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#       "sed -i '/#MOREIPS/a IP.100 = ${oci_core_instance.node.public_ip}' /var/snap/microk8s/current/certs/csr.conf.template",
-#       "sudo microk8s refresh-certs",
-#       "sudo microk8s status --wait-ready"
-#     ]
-#   }
-
-#   depends_on = [
-#     oci_core_instance.node
-#   ]
-# }
-
-# resource "null_resource" "config" {
-#   provisioner "local-exec" {
-#     command = "scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@${oci_core_instance.node.public_ip}:/var/snap/microk8s/current/credentials/client.config ~/.kube/config && sed -i 's/127.0.0.1/${oci_core_instance.node.public_ip}/g' ~/.kube/config"
-#   }
-
-#   depends_on = [
-#     null_resource.certs
-#   ]
-# }

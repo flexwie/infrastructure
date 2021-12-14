@@ -7,19 +7,35 @@ packer {
   }
 }
 
-source "oracle-oci" "arm" {
-  user_ocid    = "ocid1.user.oc1..aaaaaaaa2nnbpcck3zqybpotnvjuct7he6huyjujdazfeuxvowo2spz6o4fa"
-  fingerprint  = "eb:fa:ed:5b:0e:db:64:4c:52:4d:44:a6:16:41:1c:fa"
-  tenancy_ocid = "ocid1.tenancy.oc1..aaaaaaaag2yyuob7k5chmpigyqno3uvhvts44wvwulfyzlkjsp7mwb3tykzq"
-  key_file     = "/home/felix/.oci/oci_api_key.pem"
+variable "oci_file" {
+  type    = string
+  default = "/home/felix/.oci/config"
+}
 
-  availability_domain = "xDFy:EU-FRANKFURT-1-AD-3"
-  base_image_ocid     = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaafjetiyrxkw5363xh7gushiwp4jk4ilo2mkltv24tgtxkyqeyjbcq"
-  compartment_ocid    = "ocid1.compartment.oc1..aaaaaaaaytzx7mlgya6bho6l6yjhtzl5q56oi4wk2z7aqa7kg26sxpf5zn2q"
+variable "availability_domain" {
+  type = string
+  default = "xDFy:EU-FRANKFURT-1-AD-3"
+}
+
+variable "base_image" {
+  type = string
+  default = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaafjetiyrxkw5363xh7gushiwp4jk4ilo2mkltv24tgtxkyqeyjbcq"
+}
+
+variable "compartment" {
+  type = string
+  default = "ocid1.compartment.oc1..aaaaaaaaytzx7mlgya6bho6l6yjhtzl5q56oi4wk2z7aqa7kg26sxpf5zn2q"
+}
+
+source "oracle-oci" "arm" {
+  access_cfg_file     = var.oci_file
+  availability_domain = var.availability_domain
+  base_image_ocid     = var.base_image
+  compartment_ocid    = var.compartment
   image_name          = "NomadImageARM"
   shape               = "VM.Standard.A1.Flex"
   ssh_username        = "ubuntu"
-  subnet_ocid         = "ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaa67apuacaxjj7gm7lvrjgimler3om4byttzq3fvzs5r4ea3ndzmba"
+  subnet_ocid         = "ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaasrwv7ohizxeksydnl7ayjzkfdr2hdtgonlachne74mfqf63wiggq"
 
   shape_config {
     ocpus         = 4
@@ -32,11 +48,12 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo Adding Repository",
-      "curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -",
-      "sudo apt-add-repository \"deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main\"",
-      "echo Installing Nomad and Consul",
-      "sudo apt-get update && sudo apt-get install nomad consul -y"
+      "sudo apt-get update",
+      "sudo apt-get install -y unzip",
+      "wget https://releases.hashicorp.com/nomad/1.2.2/nomad_1.2.2_linux_arm64.zip",
+      "unzip nomad_1.2.2_linux_arm64.zip",
+      "sudo cp ./nomad /usr/bin",
+      "curl https://raw.githubusercontent.com/docker/docker-install/master/install.sh | sh"
     ]
   }
 

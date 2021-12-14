@@ -1,2 +1,3 @@
 terraform/.terraform
 packer/manifest.json
+packer/oci_arm.pem
