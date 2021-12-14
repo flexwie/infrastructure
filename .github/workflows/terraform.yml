@@ -41,7 +41,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Write key
-      run: echo ${{ secrets.OCI_PRIVATE_KEY }} >> ~/key.pem
+      run: echo "${{ secrets.OCI_PRIVATE_KEY }}" >> ~/key.pem
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
