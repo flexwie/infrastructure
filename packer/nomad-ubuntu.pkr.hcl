@@ -14,7 +14,7 @@ variable "oci_file" {
 
 variable "availability_domain" {
   type = string
-  default = "xDFy:EU-FRANKFURT-1-AD-3"
+  default = "xDFy:EU-FRANKFURT-1-AD-2"
 }
 
 variable "base_image" {
