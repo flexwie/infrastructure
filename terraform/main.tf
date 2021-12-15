@@ -67,7 +67,7 @@ resource "cloudflare_record" "dns-rec" {
 }
 
 resource "oci_core_instance" "node" {
-  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[2].name
+  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   compartment_id      = oci_identity_compartment.dev.id
   display_name        = "node"
 
