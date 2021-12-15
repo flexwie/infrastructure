@@ -23,10 +23,8 @@ jobs:
       - name: Use latest Packer
         uses: hashicorp-contrib/setup-packer@v1
         
-      - name: Install oci-cli
+      - name: Configure .oci
         run: |
-          wget https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          sudo bash install.sh --accept-all-defaults --exec-dir /usr/local/bin
           mkdir -p ~/.oci
           echo [DEFAULT] >> ~/.oci/config
           echo user="${{ secrets.OCI_USER }}" >> ~/.oci/config
@@ -35,8 +33,6 @@ jobs:
           echo tenancy="${{ secrets.OCI_TENANCY }}" >> ~/.oci/config
           echo region="${{ secrets.OCI_REGION }}" >> ~/.oci/config
           echo "${{ secrets.OCI_PRIVATE_KEY }}" >> ~/.oci/oci_api_key.pem
-          oci setup repair-file-permissions --file ~/.oci/config
-          oci setup repair-file-permissions --file ~/.oci/oci_api_key.pem
 
       - name: Build image
-        run: packer build . -var "oci_file=~/.oci/config"
+        run: packer build -var "oci_file=~/.oci/config" .
