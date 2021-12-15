@@ -114,3 +114,9 @@ END
 
 sudo systemctl enable consul
 sudo systemctl enable nomad
+
+echo "-----------------"
+echo "Installing Docker"
+echo "-----------------"
+echo ""
+curl -fsSL https://get.docker.com | sh
