@@ -47,17 +47,7 @@ build {
   sources = ["source.oracle-oci.arm"]
 
   provisioner "shell" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y unzip",
-      "wget https://releases.hashicorp.com/nomad/1.2.2/nomad_1.2.2_linux_arm64.zip",
-      "unzip nomad_1.2.2_linux_arm64.zip",
-      "sudo cp ./nomad /usr/bin",
-      "wget https://releases.hashicorp.com/consul/1.10.4/consul_1.10.4_linux_arm64.zip",
-      "unzip consul_1.10.4_linux_arm64.zip",
-      "sudo cp ./consul /usr/bin",
-      "curl https://raw.githubusercontent.com/docker/docker-install/master/install.sh | sh"
-    ]
+    script = "init.sh"
   }
 
   post-processor "manifest" {
