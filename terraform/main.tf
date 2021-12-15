@@ -78,8 +78,8 @@ resource "oci_core_instance" "node" {
   }
 
   source_details {
-    #source_id   = jsondecode(file(var.manifest)).builds[0].artifact_id
-    source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaln55u5yyl776hpydrry6gxg6hwlagutrbhdaohemlw5sz4sdf4cq"
+    source_id = jsondecode(file(var.manifest)).builds[0].artifact_id
+    #source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaln55u5yyl776hpydrry6gxg6hwlagutrbhdaohemlw5sz4sdf4cq"
     source_type = "image"
   }
 

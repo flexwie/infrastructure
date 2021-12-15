@@ -34,5 +34,14 @@ jobs:
           echo region="${{ secrets.OCI_REGION }}" >> ~/.oci/config
           echo "${{ secrets.OCI_PRIVATE_KEY }}" >> ~/.oci/oci_api_key.pem
 
+      - name: Init Packer
+        run: packer init .
+
       - name: Build image
         run: packer build -var "oci_file=~/.oci/config" .
+
+      - name: Publish manifest
+        uses: actions/upload-artifact@v2
+        with:
+          name: manifest
+          path: ./manifest.json
