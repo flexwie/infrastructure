@@ -19,7 +19,9 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: https://felixwie.com
     env:
       TF_VAR_user_ocid: ${{ secrets.OCI_USER }}
       TF_VAR_fingerprint: ${{ secrets.OCI_FINGERPRINT }}
