@@ -29,39 +29,17 @@ sudo chmod 640 /etc/consul.d/consul.hcl
 sudo consul tls ca create
 sudo consul tls cert create -server -dc dc1
 
-echo "----------------"
-echo "Installing Nomad"
-echo "----------------"
-echo ""
-
-echo "Getting binaries"
-export NOMAD_VERSION="1.2.3"
-sudo curl --silent --remote-name https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_arm64.zip
-sudo unzip nomad_${NOMAD_VERSION}_linux_arm64.zip
-sudo chown root:root nomad
-sudo mv nomad /usr/local/bin/
-sudo rm nomad_${NOMAD_VERSION}_linux_arm64.zip
-
-echo "Preparing configuration"
-sudo mkdir --parents /opt/nomad
-sudo mkdir --parents /etc/nomad.d
-sudo chmod 700 /etc/nomad.d
-sudo touch /etc/nomad.d/nomad.hcl
-
-echo "Creating configration"
-sudo tee -a /etc/nomad.d/nomad.hcl << END
-datacenter = "dc1"
-data_dir = "/opt/nomad"
-
-client {
-  cpu_total_compute = 11200
-}
-END
-
+echo "Creating config file"
 sudo tee -a /etc/consul.d/consul.hcl << END
 datacenter = "dc1"
 data_dir = "/opt/consul"
 client_addr = "0.0.0.0"
+
+acl = {
+  enabled = true
+  default_policy = "deny"
+  enable_token_persistence = true
+}
 END
 
 echo "Creating systemd files"
@@ -88,6 +66,51 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 END
 
+echo "Bootstrapping Consul ACL"
+consul acl bootstrap >> consul.acl
+export CONSUL_HTTP_TOKEN=$(awk '/SecretID/ {print $2}' consul.acl)
+
+sudo systemctl enable consul
+
+echo "----------------"
+echo "Installing Nomad"
+echo "----------------"
+echo ""
+
+echo "Getting binaries"
+export NOMAD_VERSION="1.2.3"
+sudo curl --silent --remote-name https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_arm64.zip
+sudo unzip nomad_${NOMAD_VERSION}_linux_arm64.zip
+sudo chown root:root nomad
+sudo mv nomad /usr/local/bin/
+sudo rm nomad_${NOMAD_VERSION}_linux_arm64.zip
+
+echo "Preparing configuration"
+sudo mkdir --parents /opt/nomad
+sudo mkdir --parents /etc/nomad.d
+sudo chmod 700 /etc/nomad.d
+sudo touch /etc/nomad.d/nomad.hcl
+
+echo "Creating configration"
+sudo tee -a /etc/nomad.d/nomad.hcl << END
+datacenter = "dc1"
+data_dir = "/opt/nomad"
+
+acl {
+  enabled = true
+}
+
+consul {
+  token = "CONSUL_TOKEN"
+}
+
+client {
+  cpu_total_compute = 11200
+}
+END
+sudo sed -i -- 's/CONSUL_TOKEN/'"$CONSUL_HTTP_TOKEN"'/' /etc/nomad.d/nomad.hcl
+
+echo "Creating systemd service for nomad"
 sudo tee -a /etc/systemd/system/nomad.service << END
 [Unit]
 Description=Nomad
@@ -112,7 +135,10 @@ TasksMax=infinity
 WantedBy=multi-user.target
 END
 
-sudo systemctl enable consul
+echo "Bootstrapping nomad ACL"
+nomad acl bootstrap >> nomad.acl
+export NOMAD_TOKEN=$(awk '/SecretID/ {print $2}' nomad.acl)
+
 sudo systemctl enable nomad
 
 echo "-----------------"
