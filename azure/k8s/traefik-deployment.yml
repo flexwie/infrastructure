@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress-lb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        app: traefik-ingress-lb
+    spec:
+      serviceAccountName: traefik-ingress
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: traefik-ingress-lb
+        image: traefik
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+          name: admin
+        - containerPort: 80
+          name: http
+        args:
+          - "--api"
+          - "--kubernetes"
+          - "--logLevel=INFO"
+          - "--metrics.prometheus=true"
+          - "--metrics.prometheus.addrouterslabels=true"
+          - "--tracing.jaeger=true"
+          - "--providers.kubernetesingress=true"
