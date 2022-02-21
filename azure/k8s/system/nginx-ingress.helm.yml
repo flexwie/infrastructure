@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  targetRevisoin: 4.0.17
+  targetRevision: 4.0.17
   source:
     chart: ingress-nginx
     repoURL: https://kubernetes.github.io/ingress-nginx
