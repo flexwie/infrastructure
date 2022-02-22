@@ -2,3 +2,7 @@ terraform/.terraform
 terraform/*.tfstate
 packer/manifest.json
 packer/oci_arm.pem
+
+azure/.terraform
+azure/*.tfstate
+azure/*.lock.hcl
