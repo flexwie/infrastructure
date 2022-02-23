@@ -1,5 +1,0 @@
-additionalArguments:
-  - "--metrics.prometheus=true"
-  - "--metrics.prometheus.addrouterslabels=true"
-  - "--tracing.jaeger=true"
-  - "--providers.kubernetesingress=true"
