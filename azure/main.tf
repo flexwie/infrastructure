@@ -8,9 +8,9 @@ terraform {
       source  = "hashicorp/azuread"
       version = "2.18.0"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "2.4.1"
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.13.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -53,6 +53,11 @@ resource "azurerm_kubernetes_cluster_node_pool" "pool" {
   max_count             = 2
   min_count             = 0
   node_count            = 0
+}
+
+data "azurerm_kubernetes_cluster" "cluster_data" {
+  name                = azurerm_kubernetes_cluster.cluster.name
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
 resource "azurerm_dns_zone" "dns" {
