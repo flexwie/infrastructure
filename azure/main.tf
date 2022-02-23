@@ -73,7 +73,7 @@ resource "azurerm_dns_a_record" "argo" {
   zone_name           = azurerm_dns_zone.dns.name
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = 60
-  records             = ["20.79.233.73"]
+  records             = ["20.113.41.131"]
 }
 
 resource "azurerm_dns_a_record" "fission" {
