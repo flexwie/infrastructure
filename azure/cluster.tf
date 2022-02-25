@@ -39,8 +39,9 @@ data "azurerm_kubernetes_cluster" "cluster_data" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
+# create domain pointing to the cluster
 resource "azurerm_dns_zone" "dns" {
-  name                = "haste.cloud"
+  name                = var.dns_name
   resource_group_name = azurerm_resource_group.rg.name
 }
 
