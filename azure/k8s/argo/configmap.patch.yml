@@ -1,0 +1,13 @@
+data:
+  url: https://argo.haste.cloud
+  oidc.config: |
+    name: Azure
+    issuer: https://login.microsoftonline.com/$tenant_id/v2.0
+    clientID: $client_id
+    requestedIDTokenClaims:
+      groups:
+        essential: true
+    requestedScopes:
+      - openid
+      - profile
+      - email

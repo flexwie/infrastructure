@@ -18,6 +18,10 @@ resource "kubectl_manifest" "namespace" {
   count              = length(data.kubectl_file_documents.namespace.documents)
   yaml_body          = element(data.kubectl_file_documents.namespace.documents, count.index)
   override_namespace = "argo"
+
+  depends_on = [
+    local_file.kubeconfig
+  ]
 }
 
 resource "kubectl_manifest" "argocd" {
@@ -30,6 +34,23 @@ resource "kubectl_manifest" "argocd" {
   ]
 }
 
+resource "time_sleep" "wait_for_argo" {
+  depends_on = [
+    kubectl_manifest.argocd
+  ]
+
+  create_duration = "10s"
+
+  provisioner "local-exec" {
+    command = "./k8s/argo/patch_argocd.sh"
+    environment = {
+      client_id = azuread_application.argo_auth.application_id,
+      tenant_id = data.azuread_client_config.current.tenant_id,
+      group_id  = azuread_group.argo_admin.object_id
+    }
+  }
+}
+
 resource "kubectl_manifest" "ingress-nginx" {
   count              = length(data.kubectl_file_documents.apps.documents)
   yaml_body          = element(data.kubectl_file_documents.apps.documents, count.index)
@@ -39,3 +60,4 @@ resource "kubectl_manifest" "ingress-nginx" {
     kubectl_manifest.argocd,
   ]
 }
+

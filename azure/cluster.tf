@@ -1,27 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.96.0"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "2.18.0"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "1.13.1"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.8.0"
-    }
-    local = {
-      version = "~> 2.1"
-    }
-  }
-}
-
 provider "azurerm" {
   features {}
 }
@@ -68,41 +44,25 @@ resource "azurerm_dns_zone" "dns" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_dns_a_record" "argo" {
-  name                = "argo"
+resource "azurerm_dns_a_record" "routing" {
+  name                = "*"
   zone_name           = azurerm_dns_zone.dns.name
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = 60
   records             = ["20.113.41.131"]
 }
 
-resource "azurerm_dns_a_record" "fission" {
-  name                = "faas"
-  zone_name           = azurerm_dns_zone.dns.name
-  resource_group_name = azurerm_resource_group.rg.name
-  ttl                 = 60
-  records             = ["20.79.198.242"]
+
+## Update local kube config
+resource "local_file" "kubeconfig" {
+  depends_on = [
+    azurerm_kubernetes_cluster.cluster
+  ]
+  filename = "kubeconfig"
+  content  = azurerm_kubernetes_cluster.cluster.kube_config_raw
+
+  provisioner "local-exec" {
+    command = "mv kubeconfig ~/.kube/config"
+  }
 }
 
-data "azuread_client_config" "current" {}
-
-resource "azuread_application" "name" {
-  display_name     = "ArgoCD Auth"
-  sign_in_audience = "AzureADMultipleOrgs"
-
-  web {
-    homepage_url  = "https://argo.haste.cloud"
-    redirect_uris = ["https://argo.haste.cloud/auth/callback"]
-  }
-
-  required_resource_access {
-    resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph
-
-    resource_access {
-      id   = "df021288-bdef-4463-88db-98f22de89214" # User.Read.All
-      type = "Role"
-    }
-  }
-
-  group_membership_claims = ["All"]
-}
