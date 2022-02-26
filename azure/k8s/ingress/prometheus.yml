@@ -21,7 +21,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: argo-argocd-server
+            name: prometheus-service
             port:
               number: 8080
   tls:
