@@ -17,9 +17,7 @@ spec:
   - host: prometheus.haste.cloud
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: prometheus-service
             port:
