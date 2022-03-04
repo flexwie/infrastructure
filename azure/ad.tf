@@ -8,6 +8,10 @@ resource "azuread_application" "argo_auth" {
     redirect_uris = ["https://argo.haste.cloud/auth/callback"]
   }
 
+  web {
+    redirect_uris = ["https://k8s.haste.cloud/oauth2/callback"]
+  }
+
   required_resource_access {
     resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph
 
@@ -22,6 +26,10 @@ resource "azuread_application" "argo_auth" {
   provisioner "local-exec" {
     command = "sleep 10 && az ad app permission admin-consent --id ${self.application_id}"
   }
+}
+
+resource "azuread_application_password" "secret" {
+  application_object_id = azuread_application.argo_auth.object_id
 }
 
 resource "azuread_group" "argo_admin" {

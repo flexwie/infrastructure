@@ -64,3 +64,16 @@ resource "kubectl_manifest" "ingress-nginx" {
     kubectl_manifest.argocd,
   ]
 }
+
+resource "time_sleep" "wait_for_ingress" {
+  depends_on = [
+    kubectl_manifest.ingress-nginx
+  ]
+
+  create_duration = "5s"
+
+  provisioner "local-exec" {
+    command = "./k8s/system/patch_nginx.sh"
+  }
+
+}
