@@ -23,6 +23,7 @@ spec:
             port:
               number: 8080
         pathType: Prefix
+        path: /
   tls:
   - hosts:
     - prometheus.haste.cloud
