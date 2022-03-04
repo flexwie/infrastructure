@@ -11,6 +11,8 @@ spec:
     repoURL: https://kubernetes.github.io/ingress-nginx
     helm:
       releaseName: ingress-nginx
+      valueFiles:
+        - "nginx.yml"
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

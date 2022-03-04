@@ -64,4 +64,3 @@ resource "kubectl_manifest" "ingress-nginx" {
     kubectl_manifest.argocd,
   ]
 }
-
