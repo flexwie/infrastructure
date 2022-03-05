@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jupyter-hub
+  namespace: jupyter
+spec:
+  project: default
+  source:
+    targetRevision: v1.3.1
+    chart: jupyterhub
+    repoURL: https://jupyterhub.github.io/helm-chart/
+    helm:
+      releaseName: jupyterhub
+      # parameters:
+      #   - name: installCRDs
+      #     value: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jupyter
