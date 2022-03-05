@@ -19,9 +19,9 @@ spec:
       paths:
       - backend:
           service:
-            name: hub
+            name: proxy-public
             port:
-              number: 8081
+              number: 80
         pathType: Prefix
         path: /
   tls:
