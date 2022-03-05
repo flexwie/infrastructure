@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: prometheus-ui-ingress
-  namespace: monitoring
+  name: jupyter-lab-ingress
+  namespace: jupyter
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     kubernetes.io/ingress.class: nginx
@@ -14,17 +14,17 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   rules:
-  - host: prometheus.haste.cloud
+  - host: lab.haste.cloud
     http:
       paths:
       - backend:
           service:
-            name: prometheus-service
+            name: hub
             port:
-              number: 8080
+              number: 8081
         pathType: Prefix
         path: /
   tls:
   - hosts:
-    - prometheus.haste.cloud
-    secretName: prometheus-secret
+    - lab.haste.cloud
+    secretName: jupyter-lab-secret
