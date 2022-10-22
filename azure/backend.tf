@@ -1,7 +1,7 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "devops"
-    storage_account_name = "felixwiestate"
+    resource_group_name  = "felixwie"
+    storage_account_name = "fwdatastore"
     container_name       = "terraform"
     key                  = "cluster.tfstate"
   }

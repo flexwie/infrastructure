@@ -24,15 +24,15 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   }
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "pool" {
-  name                  = "user"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.cluster.id
-  vm_size               = "standard_b2s"
-  enable_auto_scaling   = true
-  max_count             = 2
-  min_count             = 0
-  node_count            = 0
-}
+# resource "azurerm_kubernetes_cluster_node_pool" "pool" {
+#   name                  = "user"
+#   kubernetes_cluster_id = azurerm_kubernetes_cluster.cluster.id
+#   vm_size               = "standard_b2s"
+#   enable_auto_scaling   = true
+#   max_count             = 2
+#   min_count             = 0
+#   node_count            = 0
+# }
 
 data "azurerm_kubernetes_cluster" "cluster_data" {
   name                = azurerm_kubernetes_cluster.cluster.name

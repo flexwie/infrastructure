@@ -6,3 +6,7 @@ packer/oci_arm.pem
 azure/.terraform
 azure/*.tfstate
 azure/*.lock.hcl
+
+hetzner/.terraform
+
+.devcontainer
