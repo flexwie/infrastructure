@@ -10,6 +10,8 @@ resource "hcloud_server" "web" {
     ipv4 = hcloud_primary_ip.main.id
 
   }
+
+  user_data = file("user_data.yml")
 }
 
 resource "hcloud_primary_ip" "main" {
