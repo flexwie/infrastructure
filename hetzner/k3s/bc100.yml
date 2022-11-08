@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bc100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bc100
+  namespace: bc100
+spec:
+  selector:
+    matchLabels:
+      app: bc100
+  template:
+    metadata:
+      labels:
+        app: bc100
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: volume-mount
+          persistentVolumeClaim:
+            claimName: volume-claim
+      initContainers:
+      - name: init
+        image: ghcr.io/flexwie/bc100-init:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: "/usr/server/app/db"
+            name: volume-mount
+      containers:
+      - name: app
+        image: ghcr.io/flexwie/bc100:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+          - mountPath: "/usr/server/app/db"
+            name: volume-mount
+        env:
+          - name: CLIENT_ID
+            value: 3756071d-bfc5-4af3-b44a-f781cb89e2b1
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: azure-secrets
+                key: client-secret
+          - name: AZURE_CONNTECTION_STRING
+            valueFrom:
+              secretKeyRef:
+                name: azure-secrets
+                key: azure-connection-string
+          - name: CALLBACK_URL
+            value: https://bc100.felixwie.com/auth/callback
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: regcred
+  namespace: bc100
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: <DOCKER-CONFIG>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-secrets
+  namespace: bc100
+stringData:
+  client-secret: <CLIENT-SECRET>
+  azure-connection-string: <CONNECTION-STRING>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: bc100
+  name: bc100
+spec:
+  selector:
+    app: bc100
+  ports:
+  - port: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: bc100
+  name: bc100
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: bc100.felixwie.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: bc100
+            port: 
+              number: 3000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: volume-claim
+  namespace: bc100
+spec:
+  storageClassName: hcloud-volumes
+  resources:
+    requests:
+      storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
