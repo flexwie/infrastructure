@@ -29,7 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client, err := azblob.NewClient(storageUrl, credential)
+	client, err := azblob.NewClient(storageUrl, credential, nil)
 	if err != nil {
 		log.Fatalf("could not create access token provider: %v", err)
 	}
