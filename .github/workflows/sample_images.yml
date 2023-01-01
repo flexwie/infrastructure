@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          context: ${{ env.GITHUB_WORKSPACE }}/azure/k8s/identity/${{ matrix.dir }}
-          file: ${{ env.GITHUB_WORKSPACE }}/azure/k8s/identity/Dockerfile
+          context: ${{ github.workspace }}/azure/k8s/identity/${{ matrix.dir }}
+          file: ${{ github.workspace }}/azure/k8s/identity/Dockerfile
           tags: ghcr.io/flexwie/${{ matrix.dir }}:${{ github.ref_name }}
 
