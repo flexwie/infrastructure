@@ -35,5 +35,7 @@ jobs:
           push: true
           context: ${{ github.workspace }}/azure/k8s/identity/${{ matrix.dir }}
           file: ${{ github.workspace }}/azure/k8s/identity/Dockerfile
-          tags: ghcr.io/flexwie/${{ matrix.dir }}:${{ github.ref_name }}
+          tags: ghcr.io/flexwie/identity-${{ matrix.dir }}:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
