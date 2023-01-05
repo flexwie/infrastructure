@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: authtest
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    azure.workload.identity/client-id: eb00632d-eb53-492d-8ec2-a3b00e450827
+  labels:
+    azure.workload.identity/use: "true"
+  name: wlsa
+  namespace: authtest
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-sample
+  namespace: authtest
+spec:
+  serviceAccountName: wlsa
+  containers:
+    - image: ghcr.io/flexwie/identity-storage:v0.1
+      name: storage-sample
+      env:
+      - name: STORAGE_URL
+        value: https://clusterstoragefw.blob.core.windows.net
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sql-sample
+  namespace: authtest
+spec:
+  serviceAccountName: wlsa
+  containers:
+    - image: ghcr.io/flexwie/identity-sql:v0.1
+      name: sql-sample
+      env:
+      - name: SQL_SERVER
+        value: felixwie-sql.database.windows.net
+      - name: SQL_DB
+        value: monitoring

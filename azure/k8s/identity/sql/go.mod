@@ -1,4 +1,4 @@
-module felixwie.com/identity/storage
+module felixwie.com/identity/sql
 
 go 1.19
 
