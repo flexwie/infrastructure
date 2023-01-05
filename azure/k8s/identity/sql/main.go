@@ -17,7 +17,10 @@ func main() {
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	tokenFilePath := os.Getenv("AZURE_FEDERATED_TOKEN_FILE")
 
-	var connectionString = fmt.Sprintf("server=%s;user id=%s; database=%s", "url", "client id", "db")
+	server := os.Getenv("SQL_SERVER")
+	dbName := os.Getenv("SQL_DB")
+
+	var connectionString = fmt.Sprintf("server=%s;user id=%s; database=%s", server, clientID, dbName)
 
 	connection, err := mssql.NewConnectorWithAccessTokenProvider(connectionString, func(ctx context.Context) (string, error) {
 		credential, err := azidentity.NewClientAssertionCredential(tenantID, clientID, func(ctx context.Context) (string, error) {
